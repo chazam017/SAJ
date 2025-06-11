@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload de Documentos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #d7c39e;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #d7c39e;
+      border: 3px solid #7b1c1c;
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      box-shadow: 0 0 10px #00000050;
+    }
+
+    .icon-circle {
+      background-color: #7b1c1c;
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-circle img {
+      width: 70px;
+    }
+
+    .form-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-content h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    label {
+      font-style: italic;
+      font-size: 16px;
+      border: 2px dashed #7b1c1c;
+      padding: 12px 18px;
+      cursor: pointer;
+      border-radius: 10px;
+      background-color: #f6f1e7;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .submit-btn {
+      background-color: #7b1c1c;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .submit-btn:hover {
+      background-color: #9b2d2d;
+    }
+
+    .file-list {
+      font-size: 14px;
+      background-color: #fff7e0;
+      padding: 10px;
+      border: 1px dashed #7b1c1c;
+      border-radius: 8px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <form class="container" id="uploadForm">
+    <div class="card">
+      <div class="icon-circle">
+        <img src="/static/icons/upload-icon.png" alt="Ícone de Documento">
+      </div>
+      <div class="form-content">
+        <h2>FAÇA O UPLOAD DOS DOCUMENTOS DO CLIENTE</h2>
+
+        <label for="documentos">Insira os documentos pessoais e do processo</label>
+        <input type="file" id="documentos" name="documentos" accept=".png,.jpg,.jpeg,.pdf,.docx" multiple required>
+
+        <div class="file-list" id="fileList">Nenhum arquivo selecionado.</div>
+
+        <button type="submit" class="submit-btn">Continuar ➔</button>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const input = document.getElementById('documentos');
+    const fileList = document.getElementById('fileList');
+
+    input.addEventListener('change', () => {
+      const files = Array.from(input.files);
+      if (files.length === 0) {
+        fileList.innerHTML = "Nenhum arquivo selecionado.";
+      } else {
+        fileList.innerHTML = files.map(f => `• ${f.name}`).join('<br>');
+      }
+    });
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const arquivos = input.files;
+      if (!arquivos.length) {
+        alert("Selecione ao menos um documento.");
+        return;
+      }
+
+      const formData = new FormData();
+      for (let file of arquivos) {
+        formData.append('documentos', file);
+      }
+
+      try {
+        const response = await fetch('/upload-documentos', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          window.location.href = "verificacao.html";
+        } else {
+          alert("Erro ao enviar os documentos.");
+        }
+      } catch (error) {
+        alert("Erro ao conectar com o servidor.");
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+</html>

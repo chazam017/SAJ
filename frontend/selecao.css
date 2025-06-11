@@ -1,0 +1,81 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #c8b88a;
+  }
+  
+  h1 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 2rem;
+    color: #ffffff;
+    text-align: center;
+    margin: 2rem 1rem 1.5rem;
+  }
+  
+  .header-bar {
+    height: 40px;
+    background-color: #771918;
+  }
+  
+  .card {
+    background-color: #c8b88a;
+    border: 2px solid #18a843;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    width: 300px;
+    max-width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.03);
+  }
+  
+  .icone {
+    background-color: #18a843;
+    color: #ffffff;
+    font-size: 3rem;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h2 {
+    font-family: 'Archivo Black', sans-serif;
+    color: #000000;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: #000000;
+    line-height: 1.4;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .btn-voltar {
+    display: block;
+    margin: 2rem auto;
+    padding: 0.75rem 2rem;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1rem;
+    background-color: #771918;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-voltar:hover {
+    background-color: #5e1414;
+  }
+   

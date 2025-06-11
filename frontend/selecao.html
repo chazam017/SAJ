@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleção - ARIPREV</title>
+  <link rel="stylesheet" href="selecao.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+  <section class="selecao">
+    <div class="header-bar"></div>
+    <h1>SELECIONE O QUE VOCÊ PRECISA</h1>
+
+    <div class="card" onclick="selecionarOpcao()">
+      <div class="icone">
+        📄
+      </div>
+      <h2>PETIÇÃO INICIAL</h2>
+      <p>
+        <em>A petição inicial é o documento que dá início a um processo judicial. Nele, o advogado expõe os fatos, fundamenta o pedido com base na lei e solicita ao juiz uma decisão favorável ao seu cliente.</em>
+      </p>
+    </div>
+
+    <button class="btn-voltar" onclick="voltar()">VOLTAR</button>
+  </section>
+
+  <script>
+    function selecionarOpcao() {
+      window.location.href = 'selecao-beneficio.html';
+    }
+  
+    function voltar() {
+      window.location.href = 'como-funciona.html';
+    }
+  </script>
+</body>
+</html>

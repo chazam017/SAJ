@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>AriPrev - LOAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --vermelho: #771918;
+      --bege: #c8b88a;
+      --verde: #18a843;
+      --branco: #ffffff;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--branco);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: var(--vermelho);
+      color: var(--branco);
+      font-family: 'Archivo Black', sans-serif;
+      text-align: center;
+      text-transform: uppercase;
+      padding: 1rem;
+      font-size: 1.8rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--bege);
+      padding: 1rem;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      background: var(--verde);
+      color: var(--branco);
+      padding: 0.8rem 1.2rem;
+      border: none;
+      font-weight: bold;
+      font-family: 'Archivo Black', sans-serif;
+      margin-top: 1rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0.5rem;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    #resultado a {
+      color: var(--vermelho);
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>ariprev - petição loas</header>
+  <div class="container">
+    <form id="formulario">
+      <div class="card">
+        <label>Tipo de Benefício</label>
+        <select name="beneficio" required>
+          <option value="">Selecione</option>
+          <option value="idoso">LOAS - Pessoa Idosa</option>
+          <option value="deficiente">LOAS - Pessoa com Deficiência</option>
+        </select>
+
+        <label>Nome completo</label>
+        <input type="text" name="nome" required>
+
+        <label>Data de nascimento</label>
+        <input type="date" name="nascimento" required>
+
+        <label>CPF</label>
+        <input type="text" name="cpf" required>
+
+        <label>RG</label>
+        <input type="text" name="rg" required>
+
+        <label>Documentos (opcional)</label>
+        <input type="file" name="documentos" multiple>
+
+        <button class="btn" type="submit">Gerar Petição</button>
+      </div>
+    </form>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    document.getElementById('formulario').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+  
+      const response = await fetch('http://localhost:8000/gerar-peticao', {
+        method: 'POST',
+        body: formData
+      });
+  
+      const data = await response.json();
+      const resultado = document.getElementById('resultado');
+  
+      if (data.success) {
+        resultado.innerHTML = `
+          <p>Petição gerada com sucesso!</p>
+          <a href="${data.url}" target="_blank">Baixar Petição</a>
+        `;
+      } else {
+        resultado.innerHTML = '<p>Erro ao gerar a petição.</p>';
+      }
+    });
+  </script>  
+
+</body>
+</html>

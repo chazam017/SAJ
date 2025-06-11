@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tipo de Aposentadoria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #c8b88a;
+      color: #000;
+    }
+
+    .header {
+      background-color: #771918;
+      height: 40px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      margin-left: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      font-family: 'Archivo Black', sans-serif;
+      background-color: #771918;
+      padding: 20px 0;
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 50px;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      width: 220px;
+    }
+
+    .option-circle {
+      width: 100px;
+      height: 100px;
+      background-color: #18a843;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option img {
+      width: 50px;
+      height: 50px;
+      filter: brightness(0) invert(1);
+    }
+
+    .option label {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    form {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <h1>TIPO DE APOSENTADORIA</h1>
+
+  <div class="container">
+    <div class="option" onclick="enviarTipo('tempo_contribuicao')">
+      <div class="option-circle">
+        <img src="static/img/contribuicao-icon.png" alt="Contribuição">
+      </div>
+      <label>Por Tempo de Contribuição</label>
+    </div>
+
+    <div class="option" onclick="enviarTipo('idade')">
+      <div class="option-circle">
+        <img src="static/img/idade-icon.png" alt="Idade">
+      </div>
+      <label>Por Idade</label>
+    </div>
+
+    <div class="option" onclick="enviarTipo('hibrida')">
+      <div class="option-circle">
+        <img src="static/img/hibrida-icon.png" alt="Híbrida">
+      </div>
+      <label>Híbrida (Rural + Urbana)</label>
+    </div>
+  </div>
+
+  <form id="tipoAposentadoriaForm" method="POST" action="/enderecamento.html">
+    <input type="hidden" name="tipo_aposentadoria" id="tipoAposentadoriaInput">
+  </form>
+
+  <script>
+    function enviarTipo(tipo) {
+      sessionStorage.setItem("tipo_aposentadoria", tipo);
+      document.getElementById('tipoAposentadoriaInput').value = tipo;
+      document.getElementById('tipoAposentadoriaForm').submit();
+    }
+  </script>
+
+</body>
+</html>

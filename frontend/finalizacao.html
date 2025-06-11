@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finalizar - Download da Petição</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #c8b88a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #c8b88a;
+      padding: 40px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .icon-circle {
+      background-color: #771918;
+      border-radius: 50%;
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-circle img {
+      width: 70px;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h2 {
+      font-family: 'Archivo Black', sans-serif;
+      color: #000;
+      margin: 0;
+    }
+
+    .download-btn {
+      font-style: italic;
+      padding: 12px 24px;
+      background-color: #fff;
+      border: 2px dashed #771918;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .download-btn:hover {
+      background-color: #f3ede0;
+    }
+
+    .finalizar {
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #771918;
+      cursor: pointer;
+    }
+
+    .finalizar:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="icon-circle">
+      <img src="/static/icons/download-icon.png" alt="Download">
+    </div>
+    <div class="content">
+      <h2>FAÇA O DOWNLOAD DO DOCUMENTO</h2>
+      <button class="download-btn" onclick="baixarPeticao()">Download</button>
+    </div>
+  </div>
+
+  <div class="finalizar" onclick="finalizar()">FINALIZAR ➤</div>
+
+  <script>
+    function baixarPeticao() {
+      fetch('/download/ultimo-arquivo', { method: 'GET' })
+        .then(response => {
+          if (!response.ok) throw new Error('Erro ao buscar a petição.');
+          return response.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'peticao_corrigida.docx';
+          a.click();
+          URL.revokeObjectURL(url);
+        })
+        .catch(err => alert('Não foi possível baixar o arquivo.'));
+    }
+
+    function finalizar() {
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

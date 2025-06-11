@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #c8b88a;
+    color: #771918;
+  }
+  
+  h1 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 2rem;
+    line-height: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .header-bar {
+    height: 40px;
+    background-color: #771918;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .texto {
+    width: 35%;
+    min-width: 250px;
+  }
+  
+  .texto p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .etapas {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .etapa {
+    background-color: #c8b88a;
+    border: 2px solid #18a843;
+    width: 200px;
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+    border-radius: 4px;
+  }
+  
+  .etapa-circulo {
+    background-color: #18a843;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    margin: 0 auto 1rem auto;
+  }
+  
+  .etapa p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+  
+  .etapa-topo,
+  .etapa-base {
+    position: absolute;
+    background-color: #18a843;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    left: calc(50% - 5px);
+  }
+  
+  .etapa-topo {
+    top: -15px;
+  }
+  
+  .etapa-base {
+    bottom: -15px;
+  }
+  
+  .proximo-btn {
+    text-align: right;
+    padding: 1rem 2rem;
+  }
+  
+  .proximo-btn button {
+    font-family: 'Archivo Black', sans-serif;
+    background-color: transparent;
+    color: #771918;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+  }  
