@@ -1,34 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAJ - Sistema de Automação Jurídica</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAJ - Sistema de Automação Jurídica</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* -- Seu CSS existente (styles.css) deve permanecer aqui ou importado normalmente -- */
+
+    /* Botão de Configurações */
+    .btn-config {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background-color: #771918;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.2s;
+      z-index: 1000;
+    }
+
+    .btn-config:hover {
+      background-color: #9b2a2a;
+    }
+
+    .btn-config svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+  </style>
 </head>
 <body>
-    <div class="section">
-        <div class="container">
-            <div class="text-content">
-                <h1>SAJ</h1>
-                <h2>AUTOMAÇÃO JURÍDICA<br>INTELIGENTE</h2>
-                <p>
-                    O SAJ (Sistema de Automação Jurídica) foi desenvolvido para revolucionar a rotina do seu escritório de advocacia. Com poucos cliques, você gera petições iniciais, recursos, manifestações, e muito mais, de <strong>forma rápida, segura e automatizada.</strong>
-                </p>
-                <p>
-                    Nosso sistema utiliza tecnologia inteligente para preencher documentos com precisão, reduzindo erros e otimizando seu tempo. Simplifique seus processos jurídicos e concentre-se no que realmente importa: seus clientes.
-                </p>
-                
-                <!-- Botão de Iniciar -->
-                <a href="como-funciona.html" class="button">
-                    INICIAR <span class="arrow">→</span>
-                </a>
-            </div>
-            <div class="image">
-                <img src="image1.gif" alt="Ilustração do sistema AriPrev">
-            </div>
-        </div>
+  <div class="section">
+    <div class="container">
+      <div class="text-content">
+        <h1>SAJ</h1>
+        <h2>AUTOMAÇÃO JURÍDICA<br>INTELIGENTE</h2>
+        <p>
+          O SAJ (Sistema de Automação Jurídica) foi desenvolvido para revolucionar a rotina do seu escritório de advocacia. Com poucos cliques, você gera petições iniciais, recursos, manifestações, e muito mais, de <strong>forma rápida, segura e automatizada.</strong>
+        </p>
+        <p>
+          Nosso sistema utiliza tecnologia inteligente para preencher documentos com precisão, reduzindo erros e otimizando seu tempo. Simplifique seus processos jurídicos e concentre-se no que realmente importa: seus clientes.
+        </p>
+        
+        <!-- Botão de Iniciar -->
+        <a href="como-funciona.html" class="button">
+          INICIAR <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="image">
+        <img src="image1.gif" alt="Ilustração do sistema SAJ">
+      </div>
     </div>
+  </div>
+
+  <!-- botão de Configurações -->
+  <button class="btn-config" onclick="location.href='configuracoes.html'">
+    <!-- ícone de engrenagem em formato SVG -->
+    <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm7.43-1.43l1.77 1.36-1.72 2.98-2.09-.65a7.965 7.965 0 0 1-1.42 0l-1.21 1.68h-3.12l-1.21-1.68c-.48.08-.96.13-1.42.13s-.94-.05-1.42-.13l-2.09.65-1.72-2.98 1.77-1.36a8.14 8.14 0 0 1-0.32-1.68c0-.56.05-1.12.13-1.66l-1.77-1.36 1.72-2.98 2.09.65c.48-.08.96-.13 1.42-.13s.94.05 1.42.13l1.21-1.68h3.12l1.21 1.68c.48-.08.96-.13 1.42-.13s.94.05 1.42.13l2.09-.65 1.72 2.98-1.77 1.36c.08.54.13 1.1.13 1.66s-.05 1.12-.13 1.68z"/></svg>
+  </button>
+
 </body>
 </html>
