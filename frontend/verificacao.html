@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Pré-Visualização do Documento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -18,6 +19,7 @@
       font-family: 'Archivo Black', sans-serif;
       color: #771918;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .preview-container {
@@ -42,8 +44,13 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    .button {
+    .button-group {
+      display: flex;
+      gap: 20px;
       margin-top: 20px;
+    }
+
+    .button {
       padding: 12px 30px;
       background-color: #771918;
       color: #fff;
@@ -57,52 +64,51 @@
     .button:hover {
       background-color: #9b2a2a;
     }
-
-    .input-file {
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
+
   <h2>VERIFIQUE SE HÁ ERROS NO DOCUMENTO</h2>
 
   <div class="preview-container">
     <textarea id="texto-peticao" placeholder="O conteúdo da petição aparecerá aqui para edição..."></textarea>
   </div>
 
-  <button class="button" onclick="carregarPeticao()">Pré-Visualizar</button>
-  <button class="button" onclick="baixarEdicao()">Baixar com alterações</button>
+  <div class="button-group">
+    <button class="button" onclick="carregarPeticao()">Pré-Visualizar</button>
+    <button class="button" onclick="salvarAlteracoes()">Baixar com alterações</button>
+  </div>
 
   <script>
     async function carregarPeticao() {
       try {
-        const response = await fetch('/download/ultimo'); // ajuste para rota do ultimo arquivo
-        const blob = await response.blob();
-
-        if (blob.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-          const reader = new FileReader();
-          reader.onload = function () {
-            const text = reader.result;
-            document.getElementById('texto-peticao').value = text;
-          };
-          reader.readAsText(blob); // precisa q servidor converta para .txt previamente
-        } else {
-          alert('Erro ao carregar a petição.');
-        }
-      } catch (error) {
-        alert('Erro ao buscar o documento.');
+        const response = await fetch('http://localhost:8000/download/ultimo');
+        if (!response.ok) throw new Error('Erro ao buscar a petição.');
+        const texto = await response.text();
+        document.getElementById('texto-peticao').value = texto;
+      } catch (err) {
+        alert("Erro ao carregar o conteúdo da petição.");
       }
     }
 
-    function baixarEdicao() {
+    async function salvarAlteracoes() {
       const texto = document.getElementById('texto-peticao').value;
-      const blob = new Blob([texto], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'peticao_editada.docx';
-      a.click();
+
+      const res = await fetch('http://localhost:8000/salvar-edicao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texto })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = "finalizacao.html";
+      } else {
+        alert("Erro ao salvar as alterações.");
+        console.error(data);
+      }
     }
   </script>
+
 </body>
 </html>
