@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, Request
+from fastapi import FastAPI, UploadFile, File, Form, Body
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from docx import Document
@@ -11,39 +11,43 @@ import os
 import io
 import re
 
-# Caminhos/rotas
+# Configurações OCR
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 POPPLER_PATH = r"C:\poppler\Library\bin"
 
+# Inicialização
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ajustar conforme necessário
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Diretórios
 SALVOS_DIR = "saida"
 UPLOAD_DIR = "uploads"
+TEMPLATES_DIR = "templates"
 os.makedirs(SALVOS_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(TEMPLATES_DIR, exist_ok=True)
 
-# Substituir as tags no .docx
-def substituir_tags(doc, dados):
+
+# Substituição de TAGs
+def substituir_tags(doc: Document, dados: dict):
     for p in doc.paragraphs:
         for tag, valor in dados.items():
-            if f"{{{{{tag}}}}}" in p.text:
-                p.text = p.text.replace(f"{{{{{tag}}}}}", valor)
+            p.text = p.text.replace(f"{{{{{tag}}}}}", valor)
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for tag, valor in dados.items():
-                    if f"{{{{{tag}}}}}" in cell.text:
-                        cell.text = cell.text.replace(f"{{{{{tag}}}}}", valor)
+                    cell.text = cell.text.replace(f"{{{{{tag}}}}}", valor)
 
-# gerar petição automatizada
+
+# Gerar Petição
 @app.post("/gerar-peticao")
 async def gerar_peticao(
     nome: str = Form(...),
@@ -52,56 +56,48 @@ async def gerar_peticao(
     rg: str = Form(...),
     beneficio: str = Form(...),
     enderecamento: str = Form(...),
-    documentos: list[UploadFile] = File([])
+    documentos: list[UploadFile] = File([]),
 ):
     try:
-        template_path = (
-            "templates/LOAS_IDOSO_TAGS.docx"
-            if beneficio == "idoso"
-            else "templates/LOAS_DEFICIENTE_TAGS.docx"
-        )
+        template_map = {
+            "idoso": "1. TEMPLATE - LOAS IDOSO NOVO.docx",
+            "deficiente": "1. TEMPLATE - LOAS DEFICIENTE NOVO.docx",
+            "rural_salario": "TEMPLATE - SALÁRIO MATERNIDADE RURAL.docx",
+            "urbano_salario": "TEMPLATE - SALÁRIO MATERNIDADE URBANO.docx"
+        }
+        template_file = template_map.get(beneficio, "MODELO_PADRAO.docx")
+        template_path = os.path.join(TEMPLATES_DIR, template_file)
 
         doc = Document(template_path)
-
-        dados_para_substituir = {
+        dados = {
             "NOME": nome,
             "NASCIMENTO": nascimento,
             "CPF": cpf,
             "RG": rg,
             "ENDERECAMENTO": enderecamento,
         }
+        substituir_tags(doc, dados)
 
-        substituir_tags(doc, dados_para_substituir)
-
-        nome_limpo = "_".join(nome.strip().split()).lower()
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        filename = f"peticao_{nome_limpo}_{timestamp}.docx"
+        ts = datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f"peticao_{nome.strip().lower().replace(' ', '_')}_{ts}.docx"
         output_path = os.path.join(SALVOS_DIR, filename)
-
         doc.save(output_path)
 
-        return JSONResponse({
-            "success": True,
-            "filename": filename,
-            "url": f"http://localhost:8000/download/{filename}"
-        })
-
+        return JSONResponse({"success": True, "filename": filename, "url": f"/download/{filename}"})
     except Exception as e:
-        return JSONResponse({"error": f"Erro ao gerar petição: {str(e)}"}, status_code=500)
+        return JSONResponse({"error": f"Erro ao gerar petição: {e}"}, status_code=500)
+
 
 # Download por nome
 @app.get("/download/{filename}")
 async def download_peticao(filename: str):
-    file_path = os.path.join(SALVOS_DIR, filename)
-    if not os.path.exists(file_path):
+    path = os.path.join(SALVOS_DIR, filename)
+    if not os.path.exists(path):
         return JSONResponse({"error": "Arquivo não encontrado."}, status_code=404)
-    return FileResponse(
-        file_path,
-        filename=filename,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
+    return FileResponse(path, filename=filename, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-# Pré-visualização como texto
+
+# Visualizar último texto
 @app.get("/download/ultimo")
 async def download_ultimo_texto():
     try:
@@ -112,15 +108,14 @@ async def download_ultimo_texto():
         )
         if not arquivos:
             return JSONResponse({"error": "Nenhuma petição encontrada."}, status_code=404)
-
-        caminho = os.path.join(SALVOS_DIR, arquivos[0])
-        doc = Document(caminho)
-        texto = "\n".join([p.text for p in doc.paragraphs])
+        doc = Document(os.path.join(SALVOS_DIR, arquivos[0]))
+        texto = "\n".join(p.text for p in doc.paragraphs)
         return PlainTextResponse(texto)
     except Exception as e:
-        return JSONResponse({"error": f"Erro ao ler petição: {str(e)}"}, status_code=500)
+        return JSONResponse({"error": f"Erro ao ler petição: {e}"}, status_code=500)
 
-# download do último .docx gerado
+
+# Download do último .docx
 @app.get("/download/ultimo-arquivo")
 async def download_ultimo_arquivo():
     arquivos = sorted(
@@ -129,36 +124,27 @@ async def download_ultimo_arquivo():
         reverse=True
     )
     if not arquivos:
-        return JSONResponse({"error": "Nenhum documento encontrado"}, status_code=404)
+        return JSONResponse({"error": "Nenhum documento encontrado."}, status_code=404)
+    path = os.path.join(SALVOS_DIR, arquivos[0])
+    return FileResponse(path, filename=arquivos[0], media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-    caminho = os.path.join(SALVOS_DIR, arquivos[0])
-    return FileResponse(
-        caminho,
-        filename=arquivos[0],
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
 
-# upload de documentos dos clientes e etc
+# Upload de documentos
 @app.post("/upload-documentos")
 async def upload_documentos(documentos: list[UploadFile] = File(...)):
     try:
-        arquivos_salvos = []
-        for doc in documentos:
-            nome = doc.filename
-            caminho = os.path.join(UPLOAD_DIR, nome)
-            with open(caminho, "wb") as f:
-                shutil.copyfileobj(doc.file, f)
-            arquivos_salvos.append(nome)
-
-        return JSONResponse({
-            "success": True,
-            "message": "Arquivos enviados com sucesso.",
-            "arquivos_salvos": arquivos_salvos
-        })
+        salvos = []
+        for f in documentos:
+            dest = os.path.join(UPLOAD_DIR, f.filename)
+            with open(dest, "wb") as out:
+                shutil.copyfileobj(f.file, out)
+            salvos.append(f.filename)
+        return JSONResponse({"success": True, "arquivos_salvos": salvos})
     except Exception as e:
-        return JSONResponse({"error": f"Erro ao salvar arquivos: {str(e)}"}, status_code=500)
+        return JSONResponse({"error": f"Erro ao salvar arquivos: {e}"}, status_code=500)
 
-# OCR para extrair RMI (calculo de valor da causa)
+
+# OCR para extração de RMI
 @app.get("/extrair-rmi")
 async def extrair_rmi():
     arquivos = sorted(
@@ -167,55 +153,100 @@ async def extrair_rmi():
         reverse=True
     )
     if not arquivos:
-        return JSONResponse({"error": "Nenhum documento disponível."}, status_code=400)
+        return JSONResponse({"rmi": None})
 
     texto_total = ""
     for nome in arquivos:
-        caminho = os.path.join(UPLOAD_DIR, nome)
-        with open(caminho, "rb") as f:
+        path = os.path.join(UPLOAD_DIR, nome)
+        with open(path, "rb") as f:
             content = f.read()
         try:
             if nome.lower().endswith((".png", ".jpg", ".jpeg")):
                 img = Image.open(io.BytesIO(content))
                 texto_total += pytesseract.image_to_string(img)
-            elif nome.lower().endswith(".pdf"):
+            else:
                 imagens = convert_from_bytes(content, poppler_path=POPPLER_PATH)
                 for img in imagens:
                     texto_total += pytesseract.image_to_string(img)
-        except Exception as e:
-            print(f"Erro ao processar {nome}: {e}")
+        except:
             continue
 
     match = re.search(r"RMI\s*[:\-]?\s*R?\$?\s*(\d+[.,]?\d{0,2})", texto_total)
     if match:
-        rmi = match.group(1).replace(",", ".")
-        return JSONResponse({"rmi": rmi})
-
+        return JSONResponse({"rmi": match.group(1).replace(",", ".")})
     return JSONResponse({"rmi": None})
 
-# salvar edições manuais da petição / pag. de verificação
+
+# Salvar edição manual
 @app.post("/salvar-edicao")
-async def salvar_edicao(payload: dict):
+async def salvar_edicao(payload: dict = Body(...)):
+    txt = payload.get("texto", "").strip()
+    if not txt:
+        return JSONResponse({"error": "Texto vazio."}, status_code=400)
+
+    ts = datetime.now().strftime("%Y%m%d%H%M%S")
+    fn = f"peticao_editada_{ts}.docx"
+    path = os.path.join(SALVOS_DIR, fn)
+
+    doc = Document()
+    for linha in txt.splitlines():
+        doc.add_paragraph(linha)
+
+    doc.save(path)
+    return JSONResponse({"success": True, "filename": fn, "url": f"/download/{fn}"})
+
+
+# Listar templates
+@app.get("/templates")
+async def listar_templates():
+    files = [f for f in os.listdir(TEMPLATES_DIR) if f.lower().endswith(".docx")]
+    return JSONResponse({"templates": files})
+
+
+# Upload template
+@app.post("/templates/upload")
+async def upload_template(template: UploadFile = File(...)):
+    if not template.filename.lower().endswith(".docx"):
+        return JSONResponse({"error": "Apenas arquivos .docx são permitidos."}, status_code=400)
+    dest = os.path.join(TEMPLATES_DIR, template.filename)
+    with open(dest, "wb") as out:
+        shutil.copyfileobj(template.file, out)
+    return JSONResponse({"success": True, "filename": template.filename})
+
+
+# Deletar template
+@app.delete("/templates/{filename}")
+async def deletar_template(filename: str):
+    path = os.path.join(TEMPLATES_DIR, filename)
+    if os.path.exists(path):
+        os.remove(path)
+        return JSONResponse({"success": True})
+    return JSONResponse({"error": "Template não encontrado."}, status_code=404)
+
+
+# Editar template (renomear ou substituir)
+@app.post("/templates/editar")
+async def editar_template(
+    antigo_nome: str = Form(...),
+    novo_nome: str = Form(None),
+    novo_arquivo: UploadFile = File(None)
+):
     try:
-        texto = payload.get("texto", "").strip()
-        if not texto:
-            return JSONResponse({"error": "Texto vazio"}, status_code=400)
+        antigo_path = os.path.join(TEMPLATES_DIR, antigo_nome)
+        if not os.path.exists(antigo_path):
+            return JSONResponse({"error": "Arquivo original não encontrado."}, status_code=404)
 
-        filename = f"peticao_editada_{datetime.now().strftime('%Y%m%d%H%M%S')}.docx"
-        output_path = os.path.join(SALVOS_DIR, filename)
+        if novo_nome:
+            novo_nome = novo_nome if novo_nome.endswith(".docx") else novo_nome + ".docx"
+            novo_path = os.path.join(TEMPLATES_DIR, novo_nome)
+            os.rename(antigo_path, novo_path)
+            return JSONResponse({"success": True, "mensagem": "Template renomeado com sucesso."})
 
-        doc = Document()
-        for linha in texto.split("\n"):
-            doc.add_paragraph(linha)
+        if novo_arquivo:
+            with open(antigo_path, "wb") as out:
+                shutil.copyfileobj(novo_arquivo.file, out)
+            return JSONResponse({"success": True, "mensagem": "Arquivo substituído com sucesso."})
 
-        doc.save(output_path)
-
-        return JSONResponse({
-            "success": True,
-            "message": "Petição editada salva com sucesso",
-            "filename": filename,
-            "url": f"http://localhost:8000/download/{filename}"
-        })
-
+        return JSONResponse({"error": "Nenhuma alteração recebida."}, status_code=400)
     except Exception as e:
-        return JSONResponse({"error": f"Erro ao salvar edição: {str(e)}"}, status_code=500)
+        return JSONResponse({"error": f"Erro ao editar template: {e}"}, status_code=500)

@@ -103,12 +103,13 @@
   <h1>ESCOLHA O BENEFÍCIO</h1>
 
   <div class="container">
+
     <div class="card" onclick="selecionarOpcao('aposentadoria')">
       <div class="icon-circle">
         <img src="static/img/aposentadoria-icon.png" alt="Aposentadoria">
       </div>
       <h3>APOSENTADORIA</h3>
-      <p>Selecione esta opção para gerar petições relacionadas a aposentadoria por idade, tempo ou invalidez.</p>
+      <p>Geração de petições para aposentadoria por idade, tempo de contribuição ou invalidez.</p>
     </div>
 
     <div class="card" onclick="selecionarOpcao('loas')">
@@ -116,7 +117,7 @@
         <img src="static/img/loas-icon.png" alt="LOAS">
       </div>
       <h3>LOAS</h3>
-      <p>Gerar petição para benefício assistencial de prestação continuada ao idoso ou deficiente.</p>
+      <p>Petição para benefício assistencial ao idoso ou deficiente sem contribuição.</p>
     </div>
 
     <div class="card" onclick="selecionarOpcao('salario_maternidade')">
@@ -124,8 +125,33 @@
         <img src="static/img/maternidade-icon.png" alt="Salário Maternidade">
       </div>
       <h3>SALÁRIO MATERNIDADE</h3>
-      <p>Selecione esta opção para benefícios relacionados ao salário maternidade rural ou urbano.</p>
+      <p>Benefício por nascimento de filho para trabalhadoras urbanas ou rurais.</p>
     </div>
+
+    <div class="card" onclick="selecionarOpcao('auxilio_acidente')">
+      <div class="icon-circle">
+        <img src="static/img/acidente-icon.png" alt="Auxílio Acidente">
+      </div>
+      <h3>AUXÍLIO ACIDENTE</h3>
+      <p>Para trabalhadores com sequelas de acidente que reduzem a capacidade laboral.</p>
+    </div>
+
+    <div class="card" onclick="selecionarOpcao('auxilio_doenca')">
+      <div class="icon-circle">
+        <img src="static/img/doenca-icon.png" alt="Auxílio Doença">
+      </div>
+      <h3>AUXÍLIO DOENÇA</h3>
+      <p>Benefício para segurados temporariamente incapazes para o trabalho.</p>
+    </div>
+
+    <div class="card" onclick="selecionarOpcao('pensao_morte')">
+      <div class="icon-circle">
+        <img src="static/img/pensao-icon.png" alt="Pensão por Morte">
+      </div>
+      <h3>PENSÃO POR MORTE</h3>
+      <p>Benefício destinado a dependentes do segurado falecido.</p>
+    </div>
+
   </div>
 
   <script>
@@ -136,8 +162,14 @@
         window.location.href = "tipo-loas.html";
       } else if (opcao === "salario_maternidade") {
         window.location.href = "tipo-salario.html";
-      } else {
+      } else if (opcao === "aposentadoria") {
         window.location.href = "selecao-aposentadoria.html";
+      } else if (opcao === "auxilio_doenca") {
+        window.location.href = "tipo-auxilio-doenca.html";
+      } else if (opcao === "pensao_morte") {
+        window.location.href = "tipo-pensao-morte.html";
+      } else {
+        window.location.href = "enderecamento.html";
       }
     }
   </script>
