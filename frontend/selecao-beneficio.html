@@ -152,6 +152,14 @@
       <p>Benefício destinado a dependentes do segurado falecido.</p>
     </div>
 
+    <div class="card" onclick="selecionarOpcao('auxilio_reclusao')">
+      <div class="icon-circle">
+        <img src="static/img/reclusao-icon.png" alt="Auxílio Reclusão">
+      </div>
+      <h3>AUXÍLIO RECLUSÃO</h3>
+      <p>Benefício destinado a dependentes do segurado de baixa renda que foi preso em regime fechado.</p>
+    </div>
+
   </div>
 
   <script>
@@ -168,7 +176,9 @@
         window.location.href = "tipo-auxilio-doenca.html";
       } else if (opcao === "pensao_morte") {
         window.location.href = "tipo-pensao-morte.html";
-      } else {
+      } else if (opcao === "auxilio_reclusao") {
+        window.location.href = "tipo-auxilio-reclusao.html";
+      }  else {
         window.location.href = "enderecamento.html";
       }
     }
