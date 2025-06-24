@@ -11,13 +11,12 @@ import os
 import io
 import re
 
-# Configurações OCR
+# OCR config
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 POPPLER_PATH = r"C:\poppler\Library\bin"
 
-# Inicialização
+# inicialização
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Diretórios
+# pastas/rotas
 SALVOS_DIR = "saida"
 UPLOAD_DIR = "uploads"
 TEMPLATES_DIR = "templates"
@@ -34,8 +33,7 @@ os.makedirs(SALVOS_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(TEMPLATES_DIR, exist_ok=True)
 
-
-# Substituição de TAGs
+# substituição das TAGs
 def substituir_tags(doc: Document, dados: dict):
     for p in doc.paragraphs:
         for tag, valor in dados.items():
@@ -46,8 +44,7 @@ def substituir_tags(doc: Document, dados: dict):
                 for tag, valor in dados.items():
                     cell.text = cell.text.replace(f"{{{{{tag}}}}}", valor)
 
-
-# Gerar Petição
+# gerar a petição com as tags
 @app.post("/gerar-peticao")
 async def gerar_peticao(
     nome: str = Form(...),
@@ -56,6 +53,15 @@ async def gerar_peticao(
     rg: str = Form(...),
     beneficio: str = Form(...),
     enderecamento: str = Form(...),
+    nacionalidade: str = Form(...),
+    civil: str = Form(...),
+    profissao: str = Form(...),
+    filiacao: str = Form(...),
+    endereco: str = Form(...),
+    procurador: str = Form(...),
+    oab: str = Form(...),
+    der: str = Form(...),
+    nb: str = Form(...),
     documentos: list[UploadFile] = File([]),
 ):
     try:
@@ -69,26 +75,36 @@ async def gerar_peticao(
         template_path = os.path.join(TEMPLATES_DIR, template_file)
 
         doc = Document(template_path)
+
         dados = {
             "NOME": nome,
             "NASCIMENTO": nascimento,
             "CPF": cpf,
             "RG": rg,
             "ENDERECAMENTO": enderecamento,
+            "NACIONALIDADE": nacionalidade,
+            "CIVIL": civil,
+            "PROFISSAO": profissao,
+            "FILIAÇÃO": filiacao,
+            "ENDERECO": endereco,
+            "PROCURADOR": procurador,
+            "OAB": oab,
+            "DER": der,
+            "NB": nb
         }
+
         substituir_tags(doc, dados)
 
         ts = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"peticao_{nome.strip().lower().replace(' ', '_')}_{ts}.docx"
-        output_path = os.path.join(SALVOS_DIR, filename)
-        doc.save(output_path)
+        path = os.path.join(SALVOS_DIR, filename)
+        doc.save(path)
 
         return JSONResponse({"success": True, "filename": filename, "url": f"/download/{filename}"})
     except Exception as e:
         return JSONResponse({"error": f"Erro ao gerar petição: {e}"}, status_code=500)
 
-
-# Download por nome
+# download da petição finalizada
 @app.get("/download/{filename}")
 async def download_peticao(filename: str):
     path = os.path.join(SALVOS_DIR, filename)
@@ -96,8 +112,7 @@ async def download_peticao(filename: str):
         return JSONResponse({"error": "Arquivo não encontrado."}, status_code=404)
     return FileResponse(path, filename=filename, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-
-# Visualizar último texto
+# pré-visualização da última petição
 @app.get("/download/ultimo")
 async def download_ultimo_texto():
     try:
@@ -114,8 +129,7 @@ async def download_ultimo_texto():
     except Exception as e:
         return JSONResponse({"error": f"Erro ao ler petição: {e}"}, status_code=500)
 
-
-# Download do último .docx
+# download do ultimo arquivo
 @app.get("/download/ultimo-arquivo")
 async def download_ultimo_arquivo():
     arquivos = sorted(
@@ -128,8 +142,7 @@ async def download_ultimo_arquivo():
     path = os.path.join(SALVOS_DIR, arquivos[0])
     return FileResponse(path, filename=arquivos[0], media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-
-# Upload de documentos
+# upload de documentos p/ montar a petição
 @app.post("/upload-documentos")
 async def upload_documentos(documentos: list[UploadFile] = File(...)):
     try:
@@ -143,8 +156,7 @@ async def upload_documentos(documentos: list[UploadFile] = File(...)):
     except Exception as e:
         return JSONResponse({"error": f"Erro ao salvar arquivos: {e}"}, status_code=500)
 
-
-# OCR para extração de RMI
+# OCR para extração da RMI (cálculo do valor da causa)
 @app.get("/extrair-rmi")
 async def extrair_rmi():
     arquivos = sorted(
@@ -176,8 +188,7 @@ async def extrair_rmi():
         return JSONResponse({"rmi": match.group(1).replace(",", ".")})
     return JSONResponse({"rmi": None})
 
-
-# Salvar edição manual
+# salvar edição manual
 @app.post("/salvar-edicao")
 async def salvar_edicao(payload: dict = Body(...)):
     txt = payload.get("texto", "").strip()
@@ -195,15 +206,13 @@ async def salvar_edicao(payload: dict = Body(...)):
     doc.save(path)
     return JSONResponse({"success": True, "filename": fn, "url": f"/download/{fn}"})
 
-
-# Listar templates
+# listar os modelos já cadastrados
 @app.get("/templates")
 async def listar_templates():
     files = [f for f in os.listdir(TEMPLATES_DIR) if f.lower().endswith(".docx")]
     return JSONResponse({"templates": files})
 
-
-# Upload template
+# fazer upload de novos modelos de petições
 @app.post("/templates/upload")
 async def upload_template(template: UploadFile = File(...)):
     if not template.filename.lower().endswith(".docx"):
@@ -213,8 +222,7 @@ async def upload_template(template: UploadFile = File(...)):
         shutil.copyfileobj(template.file, out)
     return JSONResponse({"success": True, "filename": template.filename})
 
-
-# Deletar template
+# excluir os modelos
 @app.delete("/templates/{filename}")
 async def deletar_template(filename: str):
     path = os.path.join(TEMPLATES_DIR, filename)
@@ -223,8 +231,7 @@ async def deletar_template(filename: str):
         return JSONResponse({"success": True})
     return JSONResponse({"error": "Template não encontrado."}, status_code=404)
 
-
-# Editar template (renomear ou substituir)
+# editar os modelos dos documentos
 @app.post("/templates/editar")
 async def editar_template(
     antigo_nome: str = Form(...),

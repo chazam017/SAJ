@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-
-    /* Botão de Configurações */
+    /* botão de Configurações */
     .btn-config {
       position: fixed;
       bottom: 20px;
@@ -36,9 +35,33 @@
       height: 24px;
       fill: #fff;
     }
+
+    /* botão de fechar o app */
+    .btn-fechar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-fechar:hover {
+      background-color: #9b2a2a;
+    }
   </style>
 </head>
 <body>
+
+  <!-- botão de fechar -->
+  <button class="btn-fechar" onclick="confirmarSaida()">✖ Fechar</button>
+
   <div class="section">
     <div class="container">
       <div class="text-content">
@@ -51,7 +74,7 @@
           Nosso sistema utiliza tecnologia inteligente para preencher documentos com precisão, reduzindo erros e otimizando seu tempo. Simplifique seus processos jurídicos e concentre-se no que realmente importa: seus clientes.
         </p>
         
-        <!-- Botão de Iniciar -->
+        <!-- botão de iniciar -->
         <a href="como-funciona.html" class="button">
           INICIAR <span class="arrow">→</span>
         </a>
@@ -62,11 +85,18 @@
     </div>
   </div>
 
-  <!-- botão de Configurações -->
+  <!-- botão de configurações -->
   <button class="btn-config" onclick="location.href='configuracoes.html'">
-    <!-- ícone de engrenagem em formato SVG -->
     <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm7.43-1.43l1.77 1.36-1.72 2.98-2.09-.65a7.965 7.965 0 0 1-1.42 0l-1.21 1.68h-3.12l-1.21-1.68c-.48.08-.96.13-1.42.13s-.94-.05-1.42-.13l-2.09.65-1.72-2.98 1.77-1.36a8.14 8.14 0 0 1-0.32-1.68c0-.56.05-1.12.13-1.66l-1.77-1.36 1.72-2.98 2.09.65c.48-.08.96-.13 1.42-.13s.94.05 1.42.13l1.21-1.68h3.12l1.21 1.68c.48-.08.96-.13 1.42-.13s.94.05 1.42.13l2.09-.65 1.72 2.98-1.77 1.36c.08.54.13 1.1.13 1.66s-.05 1.12-.13 1.68z"/></svg>
   </button>
+
+  <script>
+    function confirmarSaida() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
+      }
+    }
+  </script>
 
 </body>
 </html>

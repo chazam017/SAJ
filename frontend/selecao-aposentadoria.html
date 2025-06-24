@@ -82,9 +82,49 @@
     form {
       display: none;
     }
+
+    .btn-fechar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      background-color: #7c1315;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-fechar:hover {
+      background-color: #a44234;
+    }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      background-color: #7c1315;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-voltar:hover {
+      background-color: #a44234;
+    }
   </style>
 </head>
 <body>
+
+  <!-- botões fixos (fechar e voltar) -->
+  <button class="btn-fechar" onclick="confirmarSaida()">✖ Fechar</button>
+  <button class="btn-voltar" onclick="history.back()">← Voltar</button>
 
   <div class="header">
     <div class="dot"></div>

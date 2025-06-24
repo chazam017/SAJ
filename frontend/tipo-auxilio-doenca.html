@@ -17,9 +17,13 @@
       background-color: #771918;
       height: 40px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       padding: 0 20px;
+    }
+
+    .dot-group {
+      display: flex;
     }
 
     .dot {
@@ -28,6 +32,19 @@
       background-color: #ffffff;
       border-radius: 50%;
       margin-left: 8px;
+    }
+
+    .btn-fechar {
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-fechar:hover {
+      color: #ffdddd;
     }
 
     h1 {
@@ -77,14 +94,34 @@
       font-weight: bold;
       text-align: center;
     }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-voltar:hover {
+      background-color: #9b2a2a;
+    }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
+    <button class="btn-fechar" onclick="fecharSistema()">✖</button>
+    <div class="dot-group">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
   </div>
 
   <h1>TIPO DE AUXÍLIO DOENÇA</h1>
@@ -119,11 +156,25 @@
     </div>
   </div>
 
+  <!-- Botão Voltar -->
+  <button class="btn-voltar" onclick="voltar()">← Voltar</button>
+
   <script>
     function selecionarTipo(tipo) {
       sessionStorage.setItem("tipo_auxilio_doenca", tipo);
       window.location.href = "enderecamento.html";
     }
+
+    function voltar() {
+      history.back();
+    }
+
+    function fecharSistema() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
+      }
+    }
   </script>
+
 </body>
 </html>
