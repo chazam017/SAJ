@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Upload de Documentos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -10,11 +11,45 @@
       background-color: #d7c39e;
     }
 
+    .header {
+      background-color: #7b1c1c;
+      height: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .btn-fechar {
+      background-color: transparent;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-fechar:hover {
+      color: #ffcccc;
+    }
+
+    .dot-group {
+      display: flex;
+    }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      margin-left: 8px;
+    }
+
     .container {
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      height: calc(100vh - 40px);
       padding: 20px;
     }
 
@@ -94,10 +129,42 @@
       max-height: 100px;
       overflow-y: auto;
     }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #7b1c1c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-voltar:hover {
+      background-color: #9b2d2d;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Header com botão de fechar -->
+  <div class="header">
+    <button class="btn-fechar" onclick="fecharSistema()">✖</button>
+    <div class="dot-group">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- Botão de voltar -->
+  <button class="btn-voltar" onclick="voltar()">← Voltar</button>
+
+  <!-- Formulário de upload -->
   <form class="container" id="uploadForm">
     <div class="card">
       <div class="icon-circle">
@@ -116,6 +183,7 @@
     </div>
   </form>
 
+  <!-- Scripts -->
   <script>
     const form = document.getElementById('uploadForm');
     const input = document.getElementById('documentos');
@@ -123,11 +191,9 @@
 
     input.addEventListener('change', () => {
       const files = Array.from(input.files);
-      if (files.length === 0) {
-        fileList.innerHTML = "Nenhum arquivo selecionado.";
-      } else {
-        fileList.innerHTML = files.map(f => `• ${f.name}`).join('<br>');
-      }
+      fileList.innerHTML = files.length === 0
+        ? "Nenhum arquivo selecionado."
+        : files.map(f => `• ${f.name}`).join('<br>');
     });
 
     form.addEventListener('submit', async function(event) {
@@ -160,6 +226,16 @@
         console.error(error);
       }
     });
+
+    function voltar() {
+      history.back();
+    }
+
+    function fecharSistema() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
+      }
+    }
   </script>
 
 </body>

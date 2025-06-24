@@ -17,9 +17,26 @@
       background-color: #771918;
       height: 40px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       padding: 0 20px;
+    }
+
+    .btn-fechar {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-fechar:hover {
+      color: #ffcccc;
+    }
+
+    .dot-group {
+      display: flex;
     }
 
     .dot {
@@ -36,6 +53,7 @@
       margin: auto;
       background: #fff;
       border-radius: 12px;
+      position: relative;
     }
 
     h1 {
@@ -108,15 +126,37 @@
     .button-extrair button:hover {
       background-color: #5c1313;
     }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-voltar:hover {
+      background-color: #5c1313;
+    }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
+    <button class="btn-fechar" onclick="fecharSistema()">✖</button>
+    <div class="dot-group">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
   </div>
+
+  <button class="btn-voltar" onclick="voltar()">← Voltar</button>
 
   <div class="container">
     <h1>Calcular Valor da Causa - Benefício</h1>
@@ -134,6 +174,7 @@
       <option value="46">Pensão por Morte</option>
       <option value="87">Auxílio-Doença</option>
       <option value="88">BPC/LOAS</option>
+      <option value="39">Salário Maternidade</option>
     </select>
 
     <div class="row">
@@ -246,6 +287,16 @@
         }
       } else {
         alert("Erro ao buscar RMI.");
+      }
+    }
+
+    function voltar() {
+      history.back();
+    }
+
+    function fecharSistema() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
       }
     }
   </script>
