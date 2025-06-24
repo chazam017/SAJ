@@ -95,174 +95,183 @@
       color: #555;
       font-style: italic;
     }
+
+    /* Modal */
+    #editModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #editModal .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .button {
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #a62828;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Gerenciar Modelos de Documentos</h1>
+<div class="header">
+  <h1>Gerenciar Modelos de Documentos</h1>
+</div>
+
+<div class="container">
+
+  <div class="actions-top">
+    <button class="btn" onclick="document.getElementById('fileUpload').click()">Novo</button>
+    <button class="btn" onclick="excluirSelecionados()">Excluir</button>
+    <a href="index.html" class="btn">Fechar</a>
   </div>
 
-  <div class="container">
+  <input type="file" id="fileUpload" style="display:none;" accept=".docx" onchange="uploadTemplate(this.files[0])"/>
 
-    <div class="actions-top">
-      <button class="btn" onclick="document.getElementById('fileUpload').click()">Novo</button>
-      <button class="btn" onclick="excluirSelecionados()">Excluir</button>
-      <a href="index.html" class="btn">Fechar</a>
-    </div>
+  <table>
+    <thead>
+      <tr>
+        <th><input type="checkbox" onclick="selecionarTodos(this)"></th>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaTemplates">
+      <!-- preenchido dinamicamente -->
+    </tbody>
+  </table>
 
-    <input type="file" id="fileUpload" style="display:none;" accept=".docx" onchange="uploadTemplate(this.files[0])"/>
+  <a class="footer-link" href="index.html">← Voltar ao Início</a>
+</div>
 
-    <table>
-      <thead>
-        <tr>
-          <th><input type="checkbox" onclick="selecionarTodos(this)"></th>
-          <th>Nome</th>
-          <th class="label-beneficio">Descrição</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="listaTemplates">
-        <!-- modelos serão inseridos aqui -->
-      </tbody>
-    </table>
-
-    <a class="footer-link" href="index.html">← Voltar ao Início</a>
-  </div>
-
-  <script>
-    async function carregarTemplates() {
-      try {
-        const res = await fetch('/templates');
-        const data = await res.json();
-        const tbody = document.getElementById('listaTemplates');
-        tbody.innerHTML = '';
-        data.templates.forEach(nome => {
-          const tr = document.createElement('tr');
-          const checkbox = `<td><input type="checkbox" data-filename="${nome}"></td>`;
-          const nomeDoc = `<td>${nome}</td>`;
-          const descricao = `<td class="label-beneficio">${identificarBeneficio(nome)}</td>`;
-          const acoes = `
-            <td class="actions">
-              <button title="Baixar" onclick="baixarTemplate('${nome}')">⬇️</button>
-              <button title="Editar" onclick="alert('Função editar ainda não implementada')">✏️</button>
-              <button title="Excluir" onclick="excluirTemplate('${nome}')">🗑️</button>
-            </td>
-          `;
-          tr.innerHTML = checkbox + nomeDoc + descricao + acoes;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        alert('Erro ao carregar templates');
-        console.error(err);
-      }
-    }
-
-    function identificarBeneficio(nome) {
-      nome = nome.toLowerCase();
-      if (nome.includes("idoso")) return "Modelo para LOAS - Idoso";
-      if (nome.includes("deficien")) return "Modelo para LOAS - Deficiente";
-      if (nome.includes("salário") && nome.includes("rural")) return "Salário Maternidade Rural";
-      if (nome.includes("salário") && nome.includes("urbano")) return "Salário Maternidade Urbano";
-      if (nome.includes("auxilio") && nome.includes("doenca")) return "Auxílio Doença";
-      if (nome.includes("aposentadoria")) return "Aposentadoria";
-      return "Modelo geral";
-    }
-
-    async function uploadTemplate(file) {
-      if (!file || !file.name.endsWith('.docx')) {
-        return alert('Envie um arquivo .docx válido.');
-      }
-
-      const formData = new FormData();
-      formData.append('template', file);
-
-      try {
-        const res = await fetch('/templates/upload', { method: 'POST', body: formData });
-        if (res.ok) {
-          alert('Template enviado com sucesso!');
-          carregarTemplates();
-        } else {
-          alert('Erro ao enviar template.');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Erro ao enviar.');
-      }
-    }
-
-    async function excluirTemplate(nome) {
-      if (!confirm(`Excluir "${nome}"?`)) return;
-      const res = await fetch(`/templates/${nome}`, { method: 'DELETE' });
-      if (res.ok) carregarTemplates();
-      else alert('Erro ao excluir template.');
-    }
-
-    async function baixarTemplate(nome) {
-      window.open(`/download/${nome}`, '_blank');
-    }
-
-    function selecionarTodos(box) {
-      const checkboxes = document.querySelectorAll('#listaTemplates input[type="checkbox"]');
-      checkboxes.forEach(cb => cb.checked = box.checked);
-    }
-
-    function excluirSelecionados() {
-      const selecionados = document.querySelectorAll('#listaTemplates input[type="checkbox"]:checked');
-      if (selecionados.length === 0) return alert("Nenhum modelo selecionado.");
-      if (!confirm("Deseja excluir os modelos selecionados?")) return;
-
-      selecionados.forEach(cb => excluirTemplate(cb.getAttribute('data-filename')));
-    }
-
-    document.addEventListener('DOMContentLoaded', carregarTemplates);
-  </script>
-
-<!-- Modal de Edição -->
-<div id="editModal" style="
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-">
-  <div style="
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    position: relative;
-  ">
-    <h3 style="margin-top: 0; color: #771918; font-family: 'Archivo Black', sans-serif;">Editar Modelo</h3>
+<!-- Modal -->
+<div id="editModal">
+  <div class="modal-content">
+    <h3 style="color: #771918; font-family: 'Archivo Black';">Editar Modelo</h3>
     <form id="editForm">
       <input type="hidden" id="editOldName">
-
-      <label for="editNewName">Novo nome do modelo (.docx):</label>
+      <label for="editNewName">Novo nome (.docx):</label>
       <input type="text" id="editNewName" required>
 
-      <label for="editNewFile">Substituir arquivo (.docx):</label>
+      <label for="editNewFile">Substituir arquivo:</label>
       <input type="file" id="editNewFile" accept=".docx">
 
-      <div class="button-group" style="margin-top: 20px;">
+      <div class="button-group">
         <button type="submit" class="button">Salvar Alterações</button>
-        <button type="button" class="button" style="background-color: #999" onclick="fecharModal()">Cancelar</button>
+        <button type="button" class="button" style="background:#999" onclick="fecharModal()">Cancelar</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-  function abrirModalEditar(nomeAtual) {
-    document.getElementById('editOldName').value = nomeAtual;
-    document.getElementById('editNewName').value = nomeAtual.replace('.docx', '');
+  async function carregarTemplates() {
+    try {
+      const res = await fetch('/templates');
+      const data = await res.json();
+      const tbody = document.getElementById('listaTemplates');
+      tbody.innerHTML = '';
+
+      data.templates.forEach(item => {
+        const nome = item.nome;
+        const descricao = item.descricao || "Modelo geral";
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="checkbox" data-filename="${nome}"></td>
+          <td>${nome}</td>
+          <td class="label-beneficio">${descricao}</td>
+          <td class="actions">
+            <button onclick="baixarTemplate('${nome}')">⬇️</button>
+            <button onclick="abrirModalEditar('${nome}')">✏️</button>
+            <button onclick="excluirTemplate('${nome}')">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      alert('Erro ao carregar templates');
+      console.error(err);
+    }
+  }
+
+  async function uploadTemplate(file) {
+    if (!file || !file.name.endsWith('.docx')) return alert('Envie um arquivo .docx válido.');
+
+    const formData = new FormData();
+    formData.append('template', file);
+
+    const res = await fetch('/templates/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      alert('Template enviado!');
+      carregarTemplates();
+    } else {
+      alert('Erro ao enviar template.');
+    }
+  }
+
+  async function excluirTemplate(nome) {
+    if (!confirm(`Excluir "${nome}"?`)) return;
+    const res = await fetch(`/templates/${nome}`, { method: 'DELETE' });
+    if (res.ok) carregarTemplates();
+    else alert('Erro ao excluir template.');
+  }
+
+  async function baixarTemplate(nome) {
+    window.open(`/download/${nome}`, '_blank');
+  }
+
+  function selecionarTodos(master) {
+    document.querySelectorAll('#listaTemplates input[type="checkbox"]').forEach(cb => {
+      cb.checked = master.checked;
+    });
+  }
+
+  function excluirSelecionados() {
+    const selecionados = [...document.querySelectorAll('#listaTemplates input[type="checkbox"]:checked')];
+    if (selecionados.length === 0) return alert("Nenhum modelo selecionado.");
+    if (!confirm("Excluir os modelos selecionados?")) return;
+
+    selecionados.forEach(cb => excluirTemplate(cb.getAttribute('data-filename')));
+  }
+
+  function abrirModalEditar(nome) {
+    document.getElementById('editOldName').value = nome;
+    document.getElementById('editNewName').value = nome.replace('.docx', '');
     document.getElementById('editModal').style.display = 'flex';
   }
 
@@ -273,7 +282,6 @@
 
   document.getElementById('editForm').addEventListener('submit', async e => {
     e.preventDefault();
-
     const oldName = document.getElementById('editOldName').value;
     const newName = document.getElementById('editNewName').value.trim() + '.docx';
     const newFile = document.getElementById('editNewFile').files[0];
@@ -283,19 +291,21 @@
     formData.append('new_name', newName);
     if (newFile) formData.append('new_file', newFile);
 
-    const res = await fetch(`/templates/editar`, {
+    const res = await fetch('/templates/editar', {
       method: 'POST',
       body: formData
     });
 
     if (res.ok) {
-      alert('Modelo atualizado com sucesso!');
+      alert('Modelo atualizado!');
       fecharModal();
-      carregarListaTemplates();
+      carregarTemplates();
     } else {
       alert('Erro ao atualizar modelo');
     }
   });
+
+  document.addEventListener('DOMContentLoaded', carregarTemplates);
 </script>
 
 </body>

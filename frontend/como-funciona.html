@@ -6,8 +6,52 @@
   <title>Como Funciona - ARIPREV</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    .btn-fechar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-fechar:hover {
+      background-color: #9b2a2a;
+    }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-voltar:hover {
+      background-color: #9b2a2a;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Botão Fechar -->
+  <button class="btn-fechar" onclick="confirmarSaida()">✖ Fechar</button>
+
+  <!-- Botão Voltar -->
+  <button class="btn-voltar" onclick="history.back()">← Voltar</button>
+
   <section class="como-funciona">
     <div class="header-bar"></div>
     <div class="container">
@@ -48,6 +92,13 @@
     function irParaProxima() {
       window.location.href = "selecao.html";
     }
+
+    function confirmarSaida() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
+      }
+    }
   </script>
+
 </body>
 </html>

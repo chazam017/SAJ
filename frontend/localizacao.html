@@ -99,9 +99,50 @@
       background-color: #7c1315;
       color: white;
     }
+
+    .btn-fechar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      background-color: #7c1315;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-fechar:hover {
+      background-color: #a44234;
+    }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      background-color: #7c1315;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .btn-voltar:hover {
+      background-color: #a44234;
+    }
   </style>
 </head>
 <body>
+
+  <!-- botões fixos de fechar e voltar p tela anterior -->
+  <button class="btn-fechar" onclick="confirmarSaida()">✖ Fechar</button>
+  <button class="btn-voltar" onclick="history.back()">← Voltar</button>
+
   <div class="container">
     <div class="left">
       <div class="icon-container">
@@ -128,7 +169,6 @@
   </div>
 
   <script>
-    
     const estadosCidades = {
       "AC": ["Acrelândia",
       "Assis Brasil",
@@ -217,7 +257,7 @@
     const estadoSelect = document.getElementById("estado");
     const municipioSelect = document.getElementById("municipio");
 
-       for (let estado in estadosCidades) {
+    for (let estado in estadosCidades) {
       const option = document.createElement("option");
       option.value = estado;
       option.textContent = estado;
@@ -246,9 +286,16 @@
 
       sessionStorage.setItem("estado", estado);
       sessionStorage.setItem("municipio", municipio);
-      
+
       window.location.href = "valor-causa.html";
     }
+
+    function confirmarSaida() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
+      }
+    }
   </script>
+
 </body>
 </html>
