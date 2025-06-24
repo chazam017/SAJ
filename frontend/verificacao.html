@@ -13,6 +13,7 @@
       flex-direction: column;
       align-items: center;
       padding: 40px;
+      position: relative;
     }
 
     h2 {
@@ -64,9 +65,45 @@
     .button:hover {
       background-color: #9b2a2a;
     }
+
+    .btn-voltar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #771918;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-voltar:hover {
+      background-color: #5c1313;
+    }
+
+    .btn-fechar {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #771918;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-fechar:hover {
+      color: #9b2a2a;
+    }
   </style>
 </head>
 <body>
+
+  <button class="btn-fechar" onclick="fecharSistema()">✖</button>
+  <button class="btn-voltar" onclick="voltar()">← Voltar</button>
 
   <h2>VERIFIQUE SE HÁ ERROS NO DOCUMENTO</h2>
 
@@ -106,6 +143,16 @@
       } else {
         alert("Erro ao salvar as alterações.");
         console.error(data);
+      }
+    }
+
+    function voltar() {
+      history.back();
+    }
+
+    function fecharSistema() {
+      if (confirm("Deseja realmente fechar o sistema?")) {
+        window.close();
       }
     }
   </script>
